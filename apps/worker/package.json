@@ -1,0 +1,25 @@
+{
+  "name": "@meta-chatbot/worker",
+  "version": "0.1.0",
+  "main": "dist/main.js",
+  "types": "dist/main.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "tsx watch src/main.ts",
+    "lint": "tsc -p tsconfig.build.json --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@meta-chatbot/ai": "0.1.0",
+    "@meta-chatbot/channel-adapters": "0.1.0",
+    "@meta-chatbot/config": "0.1.0",
+    "@meta-chatbot/core": "0.1.0",
+    "@meta-chatbot/db": "0.1.0",
+    "@meta-chatbot/logger": "0.1.0",
+    "@meta-chatbot/queue": "0.1.0",
+    "@nestjs/common": "^11.1.8",
+    "@nestjs/core": "^11.1.19",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2"
+  }
+}

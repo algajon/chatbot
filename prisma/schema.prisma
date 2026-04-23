@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ChannelType {
+  WHATSAPP
+  INSTAGRAM
+}
+
+enum ConversationStatus {
+  OPEN
+  HANDOFF
+  CLOSED
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+  INTERNAL
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  VIDEO
+  AUDIO
+  INTERACTIVE
+  SYSTEM
+  UNKNOWN
+}
+
+enum MemoryKind {
+  PREFERENCE
+  IDENTITY
+  SUPPORT_CONTEXT
+  BUSINESS_FACT
+}
+
+enum ToolExecutionStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum HandoffStatus {
+  REQUESTED
+  ACKNOWLEDGED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id               String        @id @default(cuid())
+  externalUserKey  String        @unique
+  displayName      String?
+  language         String?
+  timezone         String?
+  phoneNumber      String?
+  instagramPsid    String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  conversations    Conversation[]
+  memoryEntries    MemoryEntry[]
+
+  @@index([phoneNumber])
+  @@index([instagramPsid])
+}
+
+model Channel {
+  id            String         @id @default(cuid())
+  type          ChannelType
+  metaAccountId String
+  pageId        String?
+  appId         String?
+  status        String         @default("active")
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  conversations Conversation[]
+
+  @@unique([type, metaAccountId])
+  @@index([type, status])
+}
+
+model Conversation {
+  id               String              @id @default(cuid())
+  userId           String
+  channelId        String
+  status           ConversationStatus  @default(OPEN)
+  lastMessageAt    DateTime?
+  assignedAgentId  String?
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel          Channel             @relation(fields: [channelId], references: [id], onDelete: Restrict)
+  messages         Message[]
+  summaries        ConversationSummary[]
+  toolExecutions   ToolExecutionLog[]
+  handoffEvents    HandoffEvent[]
+  webhookEventLogs WebhookEventLog[]
+
+  @@index([userId, channelId])
+  @@index([status, lastMessageAt])
+}
+
+model Message {
+  id               String           @id @default(cuid())
+  conversationId   String
+  direction        MessageDirection
+  idempotencyKey   String?          @unique
+  channelMessageId String?          @unique
+  messageType      MessageType
+  text             String?
+  rawPayload       Json
+  toolCalls        Json?
+  status           String           @default("received")
+  createdAt        DateTime         @default(now())
+  conversation     Conversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([direction, createdAt])
+}
+
+model ConversationSummary {
+  id                   String       @id @default(cuid())
+  conversationId       String
+  summaryText          String
+  windowStartMessageId String?
+  windowEndMessageId   String?
+  createdAt            DateTime     @default(now())
+  conversation         Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+model MemoryEntry {
+  id              String      @id @default(cuid())
+  userId          String
+  kind            MemoryKind
+  key             String
+  value           Json
+  confidence      Float       @default(0.5)
+  sourceMessageId String?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind, key])
+  @@index([userId, updatedAt])
+}
+
+model KnowledgeDocument {
+  id         String           @id @default(cuid())
+  sourceType String
+  title      String
+  body       String
+  metadata   Json?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  chunks     KnowledgeChunk[]
+
+  @@index([sourceType])
+}
+
+model KnowledgeChunk {
+  id         String                @id @default(cuid())
+  documentId String
+  chunkText  String
+  metadata   Json?
+  embedding  Unsupported("vector")?
+  createdAt  DateTime              @default(now())
+  document   KnowledgeDocument     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+}
+
+model ToolExecutionLog {
+  id             String              @id @default(cuid())
+  conversationId String
+  toolName       String
+  input          Json
+  output         Json?
+  status         ToolExecutionStatus @default(PENDING)
+  durationMs     Int?
+  createdAt      DateTime            @default(now())
+  conversation   Conversation        @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([toolName, status])
+}
+
+model HandoffEvent {
+  id             String         @id @default(cuid())
+  conversationId String
+  reason         String
+  status         HandoffStatus  @default(REQUESTED)
+  notes          String?
+  createdAt      DateTime       @default(now())
+  conversation   Conversation   @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([status, createdAt])
+}
+
+model WebhookEventLog {
+  id               String        @id @default(cuid())
+  conversationId   String?
+  eventId          String        @unique
+  channel          ChannelType
+  signatureValid   Boolean       @default(false)
+  payload          Json
+  normalizedEvents Json?
+  status           String        @default("received")
+  errorMessage     String?
+  receivedAt       DateTime      @default(now())
+  processedAt      DateTime?
+  conversation     Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
+
+  @@index([channel, receivedAt])
+  @@index([status, receivedAt])
+}
