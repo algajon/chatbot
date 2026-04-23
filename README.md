@@ -39,6 +39,7 @@ npm install
 4. Generate or apply database state:
 
 ```bash
+npm run db:enable-pgvector
 npm run db:push
 ```
 
@@ -53,7 +54,7 @@ npm run dev:worker
 
 Render free instances do not include background workers. For a low-cost test deployment, run the API and worker in a single web service:
 
-- Build Command: `npm install && npm run build`
+- Build Command: `npm install && npm run build:render`
 - Start Command: `npm run start:render`
 
 Use a paid Render background worker when you move beyond basic testing.
