@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   normalizeInstagramEvents,
+  normalizeMessengerEvents,
   normalizeWhatsAppEvents,
 } from "../src";
 
@@ -94,5 +95,47 @@ describe("@meta-chatbot/channel-adapters", () => {
         text: "Need help with an order",
       },
     });
+  });
+
+  it("normalizes Messenger postbacks as interactive events", () => {
+    const events = normalizeMessengerEvents({
+      entry: [
+        {
+          id: "page-id",
+          messaging: [
+            {
+              sender: {
+                id: "messenger-user-id",
+              },
+              recipient: {
+                id: "page-id",
+              },
+              timestamp: 1713897600000,
+              postback: {
+                title: "Track order",
+                payload: "TRACK_ORDER",
+              },
+            },
+          ],
+        },
+      ],
+    });
+
+    expect(events).toHaveLength(1);
+    expect(events[0]).toMatchObject({
+      channel: "messenger",
+      senderId: "messenger-user-id",
+      recipientId: "page-id",
+      externalUserKey: "messenger:messenger-user-id",
+      message: {
+        type: "interactive",
+        text: "Track order",
+        interactivePayload: {
+          payload: "TRACK_ORDER",
+          title: "Track order",
+        },
+      },
+    });
+    expect(events[0]?.eventId.startsWith("messenger:")).toBe(true);
   });
 });

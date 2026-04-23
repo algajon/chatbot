@@ -9,6 +9,7 @@ datasource db {
 enum ChannelType {
   WHATSAPP
   INSTAGRAM
+  MESSENGER
 }
 
 enum ConversationStatus {
@@ -61,6 +62,7 @@ model User {
   timezone         String?
   phoneNumber      String?
   instagramPsid    String?
+  messengerPsid    String?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
   conversations    Conversation[]
@@ -68,6 +70,7 @@ model User {
 
   @@index([phoneNumber])
   @@index([instagramPsid])
+  @@index([messengerPsid])
 }
 
 model Channel {

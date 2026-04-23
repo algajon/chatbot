@@ -58,6 +58,14 @@ export class WebhooksController {
     return this.handleInboundWebhook("instagram", request, body);
   }
 
+  @Post("messenger")
+  async handleMessenger(
+    @Req() request: RawBodyRequest,
+    @Body() body: unknown,
+  ): Promise<Record<string, unknown>> {
+    return this.handleInboundWebhook("messenger", request, body);
+  }
+
   private async handleInboundWebhook(
     channel: RuntimeChannelType,
     request: RawBodyRequest,
@@ -72,7 +80,11 @@ export class WebhooksController {
   }
 
   private assertChannel(channel: string): asserts channel is RuntimeChannelType {
-    if (channel !== "whatsapp" && channel !== "instagram") {
+    if (
+      channel !== "whatsapp" &&
+      channel !== "instagram" &&
+      channel !== "messenger"
+    ) {
       throw new Error(`Unsupported channel: ${channel}`);
     }
   }

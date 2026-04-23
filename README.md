@@ -4,6 +4,7 @@ Production-oriented TypeScript monorepo scaffold for a context-driven chatbot th
 
 - WhatsApp inbound and outbound messaging
 - Instagram DM inbound and outbound messaging
+- Messenger inbound and outbound messaging
 - OpenAI-powered reply generation
 - PostgreSQL persistence through Prisma
 - Redis + BullMQ worker processing
@@ -14,7 +15,7 @@ Production-oriented TypeScript monorepo scaffold for a context-driven chatbot th
 - NestJS-based worker process in `apps/worker`
 - Shared workspace packages for config, logging, queueing, Prisma access, adapters, and AI
 - Meta webhook signature verification and challenge handling
-- WhatsApp and Instagram payload normalization
+- WhatsApp, Instagram, and Messenger payload normalization
 - Raw webhook event persistence with idempotent event IDs
 - Conversation, user, channel, and message creation in the worker
 - Simple OpenAI Responses API reply generation with safe fallback
@@ -64,9 +65,20 @@ Use a paid Render background worker when you move beyond basic testing.
 - `GET /webhooks/meta/verify`
 - `GET /webhooks/meta/whatsapp`
 - `GET /webhooks/meta/instagram`
+- `GET /webhooks/meta/messenger`
 - `POST /webhooks/meta/whatsapp`
 - `POST /webhooks/meta/instagram`
+- `POST /webhooks/meta/messenger`
 - `GET /internal/health`
+
+## Meta channel setup
+
+- WhatsApp callback URL: `https://YOUR-SERVICE/webhooks/meta/whatsapp`
+- Instagram callback URL: `https://YOUR-SERVICE/webhooks/meta/instagram`
+- Messenger callback URL: `https://YOUR-SERVICE/webhooks/meta/messenger`
+- Instagram requires `INSTAGRAM_PAGE_ACCESS_TOKEN` and `INSTAGRAM_PAGE_ID`
+- Messenger requires `MESSENGER_PAGE_ACCESS_TOKEN` and `MESSENGER_PAGE_ID`
+- Reuse the same `META_APP_SECRET` and `META_VERIFY_TOKEN` when the channels live in the same Meta app
 
 ## Verification
 

@@ -42,6 +42,8 @@ const envSchema = z.object({
   INSTAGRAM_PAGE_ACCESS_TOKEN: optionalString,
   INSTAGRAM_PAGE_ID: optionalString,
   INSTAGRAM_ACCOUNT_ID: optionalString,
+  MESSENGER_PAGE_ACCESS_TOKEN: optionalString,
+  MESSENGER_PAGE_ID: optionalString,
   AWS_ACCESS_KEY_ID: optionalString,
   AWS_SECRET_ACCESS_KEY: optionalString,
   S3_BUCKET: optionalString,

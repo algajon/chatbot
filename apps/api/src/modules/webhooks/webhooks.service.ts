@@ -194,6 +194,13 @@ export class WebhooksService implements OnModuleDestroy {
   }
 
   private toPrismaChannel(channel: RuntimeChannelType): ChannelType {
-    return channel === "whatsapp" ? ChannelType.WHATSAPP : ChannelType.INSTAGRAM;
+    switch (channel) {
+      case "whatsapp":
+        return ChannelType.WHATSAPP;
+      case "instagram":
+        return ChannelType.INSTAGRAM;
+      case "messenger":
+        return ChannelType.MESSENGER;
+    }
   }
 }

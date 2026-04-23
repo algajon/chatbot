@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import {
   buildInstagramOutboundTextMessage,
+  buildMessengerOutboundTextMessage,
   buildWhatsAppOutboundTextMessage,
 } from "@meta-chatbot/channel-adapters";
 import { getEnv } from "@meta-chatbot/config";
@@ -70,16 +71,32 @@ export class MetaOutboundMessageService {
       });
     }
 
-    if (!this.env.INSTAGRAM_PAGE_ACCESS_TOKEN || !this.env.INSTAGRAM_PAGE_ID) {
+    if (input.channel === "instagram") {
+      if (!this.env.INSTAGRAM_PAGE_ACCESS_TOKEN || !this.env.INSTAGRAM_PAGE_ID) {
+        throw new Error(
+          "INSTAGRAM_PAGE_ACCESS_TOKEN and INSTAGRAM_PAGE_ID must be configured.",
+        );
+      }
+
+      return buildInstagramOutboundTextMessage({
+        graphVersion: this.env.META_GRAPH_VERSION,
+        accessToken: this.env.INSTAGRAM_PAGE_ACCESS_TOKEN,
+        pageId: this.env.INSTAGRAM_PAGE_ID,
+        recipientId: input.recipientId,
+        text: input.text,
+      });
+    }
+
+    if (!this.env.MESSENGER_PAGE_ACCESS_TOKEN || !this.env.MESSENGER_PAGE_ID) {
       throw new Error(
-        "INSTAGRAM_PAGE_ACCESS_TOKEN and INSTAGRAM_PAGE_ID must be configured.",
+        "MESSENGER_PAGE_ACCESS_TOKEN and MESSENGER_PAGE_ID must be configured.",
       );
     }
 
-    return buildInstagramOutboundTextMessage({
+    return buildMessengerOutboundTextMessage({
       graphVersion: this.env.META_GRAPH_VERSION,
-      accessToken: this.env.INSTAGRAM_PAGE_ACCESS_TOKEN,
-      pageId: this.env.INSTAGRAM_PAGE_ID,
+      accessToken: this.env.MESSENGER_PAGE_ACCESS_TOKEN,
+      pageId: this.env.MESSENGER_PAGE_ID,
       recipientId: input.recipientId,
       text: input.text,
     });

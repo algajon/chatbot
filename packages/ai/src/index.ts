@@ -89,8 +89,15 @@ export class OpenAiResponseService {
 export class AiModule {}
 
 function buildSystemPrompt(channel: RuntimeChannelType): string {
+  const channelLabel =
+    channel === "whatsapp"
+      ? "WhatsApp"
+      : channel === "instagram"
+        ? "Instagram DM"
+        : "Messenger";
+
   return [
-    `You are a customer support assistant for ${channel === "whatsapp" ? "WhatsApp" : "Instagram DM"} conversations.`,
+    `You are a customer support assistant for ${channelLabel} conversations.`,
     "Be concise, clear, and natural.",
     "Use only the information in the conversation context.",
     "Do not invent policies, order status, or business details.",

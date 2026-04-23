@@ -69,9 +69,14 @@ export function normalizeInboundEvents(
   channel: RuntimeChannelType,
   payload: unknown,
 ): NormalizedInboundEvent[] {
-  return channel === "whatsapp"
-    ? normalizeWhatsAppEvents(payload)
-    : normalizeInstagramEvents(payload);
+  switch (channel) {
+    case "whatsapp":
+      return normalizeWhatsAppEvents(payload);
+    case "instagram":
+      return normalizeInstagramEvents(payload);
+    case "messenger":
+      return normalizeMessengerEvents(payload);
+  }
 }
 
 export function normalizeWhatsAppEvents(payload: unknown): NormalizedInboundEvent[] {
@@ -157,6 +162,37 @@ export function normalizeWhatsAppEvents(payload: unknown): NormalizedInboundEven
 }
 
 export function normalizeInstagramEvents(payload: unknown): NormalizedInboundEvent[] {
+  return normalizePageChannelEvents("instagram", payload);
+}
+
+export function normalizeMessengerEvents(payload: unknown): NormalizedInboundEvent[] {
+  return normalizePageChannelEvents("messenger", payload);
+}
+
+export function buildInstagramOutboundTextMessage(params: {
+  graphVersion: string;
+  accessToken: string;
+  pageId: string;
+  recipientId: string;
+  text: string;
+}): OutboundTextMessage {
+  return buildPageOutboundTextMessage("instagram", params);
+}
+
+export function buildMessengerOutboundTextMessage(params: {
+  graphVersion: string;
+  accessToken: string;
+  pageId: string;
+  recipientId: string;
+  text: string;
+}): OutboundTextMessage {
+  return buildPageOutboundTextMessage("messenger", params);
+}
+
+function normalizePageChannelEvents(
+  channel: Extract<RuntimeChannelType, "instagram" | "messenger">,
+  payload: unknown,
+): NormalizedInboundEvent[] {
   const source = payload as {
     entry?: Array<{
       id?: string;
@@ -186,12 +222,12 @@ export function normalizeInstagramEvents(payload: unknown): NormalizedInboundEve
 
         events.push(
           normalizedInboundEventSchema.parse({
-            eventId: `instagram:${messageId}`,
+            eventId: `${channel}:${messageId}`,
             channelMessageId: messageId,
-            channel: "instagram",
+            channel,
             senderId,
             recipientId,
-            externalUserKey: `instagram:${senderId}`,
+            externalUserKey: `${channel}:${senderId}`,
             timestamp,
             message: buildInstagramMessage(event.message),
             raw: compactObject({
@@ -206,7 +242,7 @@ export function normalizeInstagramEvents(payload: unknown): NormalizedInboundEve
 
       if (event.postback) {
         const syntheticMessageId = createDeterministicId(
-          "instagram-postback",
+          `${channel}-postback`,
           senderId,
           recipientId,
           event.timestamp,
@@ -215,12 +251,12 @@ export function normalizeInstagramEvents(payload: unknown): NormalizedInboundEve
 
         events.push(
           normalizedInboundEventSchema.parse({
-            eventId: `instagram:${syntheticMessageId}`,
+            eventId: `${channel}:${syntheticMessageId}`,
             channelMessageId: syntheticMessageId,
-            channel: "instagram",
+            channel,
             senderId,
             recipientId,
-            externalUserKey: `instagram:${senderId}`,
+            externalUserKey: `${channel}:${senderId}`,
             timestamp,
             message: {
               type: "interactive",
@@ -269,15 +305,18 @@ export function buildWhatsAppOutboundTextMessage(params: {
   };
 }
 
-export function buildInstagramOutboundTextMessage(params: {
+function buildPageOutboundTextMessage(
+  channel: Extract<RuntimeChannelType, "instagram" | "messenger">,
+  params: {
   graphVersion: string;
   accessToken: string;
   pageId: string;
   recipientId: string;
   text: string;
-}): OutboundTextMessage {
+},
+): OutboundTextMessage {
   return {
-    channel: "instagram",
+    channel,
     endpointPath: `/${params.graphVersion}/${params.pageId}/messages`,
     accessToken: params.accessToken,
     payload: {

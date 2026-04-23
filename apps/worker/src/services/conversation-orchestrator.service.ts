@@ -169,7 +169,9 @@ export class ConversationOrchestratorService {
           pageId:
             event.channel === "instagram"
               ? this.env.INSTAGRAM_PAGE_ID ?? undefined
-              : undefined,
+              : event.channel === "messenger"
+                ? this.env.MESSENGER_PAGE_ID ?? undefined
+                : undefined,
         },
         create: {
           type: channelType,
@@ -177,7 +179,9 @@ export class ConversationOrchestratorService {
           pageId:
             event.channel === "instagram"
               ? this.env.INSTAGRAM_PAGE_ID ?? undefined
-              : undefined,
+              : event.channel === "messenger"
+                ? this.env.MESSENGER_PAGE_ID ?? undefined
+                : undefined,
           appId: this.env.META_APP_ID ?? undefined,
         },
       });
@@ -190,12 +194,14 @@ export class ConversationOrchestratorService {
           displayName: event.profile?.displayName ?? undefined,
           phoneNumber: event.channel === "whatsapp" ? event.senderId : undefined,
           instagramPsid: event.channel === "instagram" ? event.senderId : undefined,
+          messengerPsid: event.channel === "messenger" ? event.senderId : undefined,
         },
         create: {
           externalUserKey: event.externalUserKey,
           displayName: event.profile?.displayName ?? undefined,
           phoneNumber: event.channel === "whatsapp" ? event.senderId : undefined,
           instagramPsid: event.channel === "instagram" ? event.senderId : undefined,
+          messengerPsid: event.channel === "messenger" ? event.senderId : undefined,
         },
       });
 
@@ -299,7 +305,14 @@ export class ConversationOrchestratorService {
   }
 
   private toPrismaChannel(channel: NormalizedInboundEvent["channel"]): ChannelType {
-    return channel === "whatsapp" ? ChannelType.WHATSAPP : ChannelType.INSTAGRAM;
+    switch (channel) {
+      case "whatsapp":
+        return ChannelType.WHATSAPP;
+      case "instagram":
+        return ChannelType.INSTAGRAM;
+      case "messenger":
+        return ChannelType.MESSENGER;
+    }
   }
 
   private toPrismaMessageType(type: NormalizedInboundEvent["message"]["type"]): MessageType {

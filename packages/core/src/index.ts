@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { z } from "zod";
 
-export const channelTypeSchema = z.enum(["whatsapp", "instagram"]);
+export const channelTypeSchema = z.enum(["whatsapp", "instagram", "messenger"]);
 export type RuntimeChannelType = z.infer<typeof channelTypeSchema>;
 
 export const normalizedMessageTypeSchema = z.enum([
