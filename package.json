@@ -13,6 +13,7 @@
     "dev": "turbo run dev --parallel --filter=@meta-chatbot/api --filter=@meta-chatbot/worker",
     "dev:api": "turbo run dev --filter=@meta-chatbot/api",
     "dev:worker": "turbo run dev --filter=@meta-chatbot/worker",
+    "start:render": "sh ./scripts/render-start.sh",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "prisma:generate": "prisma generate",
