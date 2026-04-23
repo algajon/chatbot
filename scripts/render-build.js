@@ -1,5 +1,33 @@
-const { existsSync } = require("node:fs");
+const { existsSync, rmSync } = require("node:fs");
 const { execSync } = require("node:child_process");
+
+const stalePaths = [
+  "apps/api/dist",
+  "apps/worker/dist",
+  "packages/ai/dist",
+  "packages/channel-adapters/dist",
+  "packages/config/dist",
+  "packages/core/dist",
+  "packages/db/dist",
+  "packages/logger/dist",
+  "packages/queue/dist",
+  "apps/api/tsconfig.build.tsbuildinfo",
+  "apps/worker/tsconfig.build.tsbuildinfo",
+  "packages/ai/tsconfig.build.tsbuildinfo",
+  "packages/channel-adapters/tsconfig.build.tsbuildinfo",
+  "packages/config/tsconfig.build.tsbuildinfo",
+  "packages/core/tsconfig.build.tsbuildinfo",
+  "packages/db/tsconfig.build.tsbuildinfo",
+  "packages/logger/tsconfig.build.tsbuildinfo",
+  "packages/queue/tsconfig.build.tsbuildinfo",
+];
+
+for (const stalePath of stalePaths) {
+  rmSync(stalePath, {
+    force: true,
+    recursive: true,
+  });
+}
 
 const commands = [
   "npm run prisma:generate",
