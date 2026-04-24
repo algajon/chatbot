@@ -1,5 +1,5 @@
 {
-  "name": "@meta-chatbot/ai",
+  "name": "@meta-chatbot/catalog",
   "version": "0.1.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,11 +10,6 @@
     "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
-    "@meta-chatbot/catalog": "0.1.0",
-    "@meta-chatbot/config": "0.1.0",
-    "@meta-chatbot/core": "0.1.0",
-    "@meta-chatbot/logger": "0.1.0",
-    "@nestjs/common": "^11.1.8",
-    "openai": "^6.34.0"
+    "zod": "^4.1.12"
   }
 }

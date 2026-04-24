@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import {
   buildInstagramOutboundTextMessage,
   buildMessengerOutboundTextMessage,
+  buildWhatsAppOutboundImageMessage,
   buildWhatsAppOutboundTextMessage,
 } from "@meta-chatbot/channel-adapters";
 import { getEnv } from "@meta-chatbot/config";
@@ -12,6 +13,7 @@ type SendTextMessageInput = {
   channel: RuntimeChannelType;
   recipientId: string;
   text: string;
+  imageUrl?: string;
 };
 
 type SendTextMessageResult = {
@@ -60,6 +62,17 @@ export class MetaOutboundMessageService {
         throw new Error(
           "WHATSAPP_ACCESS_TOKEN and WHATSAPP_PHONE_NUMBER_ID must be configured.",
         );
+      }
+
+      if (input.imageUrl) {
+        return buildWhatsAppOutboundImageMessage({
+          graphVersion: this.env.META_GRAPH_VERSION,
+          accessToken: this.env.WHATSAPP_ACCESS_TOKEN,
+          phoneNumberId: this.env.WHATSAPP_PHONE_NUMBER_ID,
+          recipientId: input.recipientId,
+          imageUrl: input.imageUrl,
+          caption: input.text,
+        });
       }
 
       return buildWhatsAppOutboundTextMessage({

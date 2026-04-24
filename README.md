@@ -5,6 +5,7 @@ Production-oriented TypeScript monorepo scaffold for a context-driven chatbot th
 - WhatsApp inbound and outbound messaging
 - Instagram DM inbound and outbound messaging
 - Messenger inbound and outbound messaging
+- Albanian jewelry catalog template and product matching
 - OpenAI-powered reply generation
 - PostgreSQL persistence through Prisma
 - Redis + BullMQ worker processing
@@ -16,6 +17,7 @@ Production-oriented TypeScript monorepo scaffold for a context-driven chatbot th
 - Shared workspace packages for config, logging, queueing, Prisma access, adapters, and AI
 - Meta webhook signature verification and challenge handling
 - WhatsApp, Instagram, and Messenger payload normalization
+- In-memory loading of `data/argjendari-catalog.al.json` for Albanian product matching
 - Raw webhook event persistence with idempotent event IDs
 - Conversation, user, channel, and message creation in the worker
 - Simple OpenAI Responses API reply generation with safe fallback
@@ -59,6 +61,14 @@ Render free instances do not include background workers. For a low-cost test dep
 - Start Command: `npm run start:render`
 
 Use a paid Render background worker when you move beyond basic testing.
+
+## Jewelry catalog template
+
+- The default Albanian jewelry catalog file is `data/argjendari-catalog.al.json`
+- `CATALOG_FILE_PATH` can point to another JSON file if you want a different catalog
+- `PUBLIC_BASE_URL` should point to your public app URL so WhatsApp can fetch catalog images
+- Each product can store strings plus image references through the `images` array
+- The worker loads the catalog into memory and uses it to match Albanian queries such as `a keni unaze 22 karat te meshkujve?`
 
 ## Important endpoints
 

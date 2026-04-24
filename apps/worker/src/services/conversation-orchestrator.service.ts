@@ -1,5 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { OpenAiResponseService } from "@meta-chatbot/ai";
+import {
+  getTopCatalogProduct,
+  loadJewelryCatalog,
+  resolveCatalogImageUrl,
+  searchJewelryCatalog,
+  type CatalogSearchResult,
+} from "@meta-chatbot/catalog";
 import { getEnv } from "@meta-chatbot/config";
 import {
   createDeterministicId,
@@ -64,16 +71,20 @@ export class ConversationOrchestratorService {
       }
 
       const conversationContext = await this.prepareConversation(payload);
+      const catalogSearch = this.tryBuildCatalogSearch(payload.normalizedEvent);
+      const imageUrl = this.tryBuildCatalogImageUrl(catalogSearch);
       const aiReply = await this.openAiResponseService.generateReply({
         channel: payload.normalizedEvent.channel,
         userDisplayName: conversationContext.userDisplayName,
         recentMessages: conversationContext.recentMessages,
+        catalogSearch,
       });
 
       const outboundResponse = await this.metaOutboundMessageService.sendTextMessage({
         channel: payload.normalizedEvent.channel,
         recipientId: payload.normalizedEvent.senderId,
         text: aiReply.text,
+        imageUrl,
       });
 
       await this.prisma.$transaction(async (tx) => {
@@ -334,6 +345,67 @@ export class ConversationOrchestratorService {
 
   private buildOutboundIdempotencyKey(event: NormalizedInboundEvent): string {
     return `outbound:${event.eventId}`;
+  }
+
+  private tryBuildCatalogSearch(
+    event: NormalizedInboundEvent,
+  ): CatalogSearchResult | undefined {
+    const query = event.message.text?.trim();
+    if (!query) {
+      return undefined;
+    }
+
+    try {
+      const catalog = loadJewelryCatalog(this.env.CATALOG_FILE_PATH);
+      return searchJewelryCatalog({
+        query,
+        catalog,
+      });
+    } catch (error) {
+      this.logger.warn(
+        {
+          channel: event.channel,
+          eventId: event.eventId,
+          error: serializeError(error),
+        },
+        "Catalog lookup failed. Continuing without product context.",
+      );
+      return undefined;
+    }
+  }
+
+  private tryBuildCatalogImageUrl(
+    catalogSearch: CatalogSearchResult | undefined,
+  ): string | undefined {
+    const product = getTopCatalogProduct(catalogSearch);
+    if (!product) {
+      return undefined;
+    }
+
+    const baseUrl = this.resolvePublicBaseUrl();
+    if (!baseUrl) {
+      return undefined;
+    }
+
+    return resolveCatalogImageUrl({
+      product,
+      baseUrl,
+    });
+  }
+
+  private resolvePublicBaseUrl(): string | undefined {
+    if (this.env.PUBLIC_BASE_URL) {
+      return this.env.PUBLIC_BASE_URL;
+    }
+
+    if (this.env.NODE_ENV !== "production") {
+      return `http://localhost:${this.env.PORT}`;
+    }
+
+    this.logger.warn(
+      "PUBLIC_BASE_URL is not configured. Catalog images will not be sent in production.",
+    );
+    return undefined;
   }
 }
 

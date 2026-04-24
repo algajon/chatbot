@@ -9,3 +9,4 @@ coverage/
 *.log
 *.tsbuildinfo
 prisma/migrations/
+PRIVATE_ARGJENDARI_NOTES.md

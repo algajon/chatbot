@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@meta-chatbot/ai": "0.1.0",
+    "@meta-chatbot/catalog": "0.1.0",
     "@meta-chatbot/channel-adapters": "0.1.0",
     "@meta-chatbot/config": "0.1.0",
     "@meta-chatbot/core": "0.1.0",

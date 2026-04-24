@@ -16,7 +16,7 @@ type MetaWebhookQuery = {
   "hub.challenge"?: string;
 };
 
-type OutboundTextMessage = {
+type OutboundRequest = {
   channel: RuntimeChannelType;
   endpointPath: string;
   accessToken: string;
@@ -175,7 +175,7 @@ export function buildInstagramOutboundTextMessage(params: {
   pageId: string;
   recipientId: string;
   text: string;
-}): OutboundTextMessage {
+}): OutboundRequest {
   return buildPageOutboundTextMessage("instagram", params);
 }
 
@@ -185,7 +185,7 @@ export function buildMessengerOutboundTextMessage(params: {
   pageId: string;
   recipientId: string;
   text: string;
-}): OutboundTextMessage {
+}): OutboundRequest {
   return buildPageOutboundTextMessage("messenger", params);
 }
 
@@ -287,7 +287,7 @@ export function buildWhatsAppOutboundTextMessage(params: {
   phoneNumberId: string;
   recipientId: string;
   text: string;
-}): OutboundTextMessage {
+}): OutboundRequest {
   return {
     channel: "whatsapp",
     endpointPath: `/${params.graphVersion}/${params.phoneNumberId}/messages`,
@@ -305,6 +305,31 @@ export function buildWhatsAppOutboundTextMessage(params: {
   };
 }
 
+export function buildWhatsAppOutboundImageMessage(params: {
+  graphVersion: string;
+  accessToken: string;
+  phoneNumberId: string;
+  recipientId: string;
+  imageUrl: string;
+  caption?: string;
+}): OutboundRequest {
+  return {
+    channel: "whatsapp",
+    endpointPath: `/${params.graphVersion}/${params.phoneNumberId}/messages`,
+    accessToken: params.accessToken,
+    payload: compactObject({
+      messaging_product: "whatsapp",
+      recipient_type: "individual",
+      to: params.recipientId,
+      type: "image",
+      image: compactObject({
+        link: params.imageUrl,
+        caption: ensureNonEmptyString(params.caption),
+      }),
+    }),
+  };
+}
+
 function buildPageOutboundTextMessage(
   channel: Extract<RuntimeChannelType, "instagram" | "messenger">,
   params: {
@@ -314,7 +339,7 @@ function buildPageOutboundTextMessage(
   recipientId: string;
   text: string;
 },
-): OutboundTextMessage {
+): OutboundRequest {
   return {
     channel,
     endpointPath: `/${params.graphVersion}/${params.pageId}/messages`,

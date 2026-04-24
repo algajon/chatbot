@@ -33,6 +33,8 @@ const envSchema = z.object({
   EXTERNAL_HTTP_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
   DATABASE_URL: z.string().min(1),
   REDIS_URL: z.string().min(1),
+  CATALOG_FILE_PATH: optionalString,
+  PUBLIC_BASE_URL: optionalString,
   OPENAI_API_KEY: optionalString,
   META_APP_SECRET: optionalString,
   META_VERIFY_TOKEN: optionalString,

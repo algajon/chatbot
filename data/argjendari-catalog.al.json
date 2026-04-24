@@ -1,0 +1,159 @@
+{
+  "store": {
+    "name": "Argjendari Template",
+    "defaultLanguage": "sq-AL",
+    "currency": "ALL",
+    "notes": "Zeendesoni produktet shembull me katalogun real te dyqanit. Fusha images.ref mund te jete URL publike ose path lokal."
+  },
+  "products": [
+    {
+      "sku": "UNM-ARI-001",
+      "title": "Unaze ari per meshkuj model ultra ekskluziv",
+      "description": "Unaze ari per meshkuj me dizajn te forte dhe gur qendror dekorativ, e pershtatshme per klientet qe kerkojne model luksoz.",
+      "category": "unaze",
+      "targetAudience": "meshkuj",
+      "material": "ar i verdhe",
+      "stone": "gur transparent",
+      "price": {
+        "amount": 1700,
+        "currency": "EUR",
+        "display": "1700 EUR"
+      },
+      "availability": "in_stock",
+      "tags": [
+        "unaz",
+        "unaze",
+        "meshkuj",
+        "ari",
+        "model ultra ekskluziv",
+        "super oferte"
+      ],
+      "synonyms": [
+        "unaz per meshkuj",
+        "unaze per meshkuj",
+        "unaz per burra",
+        "unaze ari per meshkuj"
+      ],
+      "styleNotes": [
+        "pamje luksoze",
+        "gur qendror dekorativ",
+        "model i gjere per meshkuj"
+      ],
+      "images": [
+        {
+          "ref": "image.png",
+          "altText": "Unaze ari per meshkuj me gur qendror dhe model ultra ekskluziv"
+        }
+      ]
+    },
+    {
+      "sku": "UNF-18K-002",
+      "title": "Unaze elegante 18 karat per femra",
+      "description": "Unaze elegante me profil te holle dhe perfundim te lemuar, ideale per dhurate ose perdorim te perditshem.",
+      "category": "unaze",
+      "targetAudience": "femra",
+      "karat": 18,
+      "material": "ar i bardhe",
+      "stone": "zirkon",
+      "weightGrams": 3.6,
+      "price": {
+        "amount": 54000,
+        "currency": "ALL",
+        "display": "54,000 ALL"
+      },
+      "availability": "limited",
+      "tags": [
+        "unaze",
+        "18 karat",
+        "femra",
+        "zirkon",
+        "elegante"
+      ],
+      "synonyms": [
+        "unaze femrash 18k",
+        "unaze elegante per gra"
+      ],
+      "styleNotes": [
+        "forme delikate",
+        "gur i vogel dekorativ"
+      ],
+      "images": [
+        {
+          "ref": "catalog-images/unaze-femra-18k-002.jpg",
+          "altText": "Unaze elegante 18 karat per femra me gur zirkon"
+        }
+      ]
+    },
+    {
+      "sku": "BYF-925-001",
+      "title": "Byzylyk argjendi per femra",
+      "description": "Byzylyk elegant nga argjendi, i lehte dhe i pershtatshem per kombinime te perditshme.",
+      "category": "byzylyke",
+      "targetAudience": "femra",
+      "material": "argjend",
+      "weightGrams": 4.1,
+      "price": {
+        "amount": 12500,
+        "currency": "ALL",
+        "display": "12,500 ALL"
+      },
+      "availability": "in_stock",
+      "tags": [
+        "byzylyk",
+        "argjend",
+        "femra",
+        "elegant"
+      ],
+      "synonyms": [
+        "byzylyke per gra",
+        "bracelet argjendi"
+      ],
+      "styleNotes": [
+        "i lehte",
+        "stil minimalist"
+      ],
+      "images": [
+        {
+          "ref": "catalog-images/byzylyk-argjendi-femra-001.jpg",
+          "altText": "Byzylyk argjendi elegant per femra"
+        }
+      ]
+    },
+    {
+      "sku": "ZNX-U-22K-001",
+      "title": "Zinxhir 22 karat unisex",
+      "description": "Zinxhir klasik 22 karat, i pershtatshem si per meshkuj ashtu edhe per femra.",
+      "category": "zinxhire",
+      "targetAudience": "unisex",
+      "karat": 22,
+      "material": "ar i verdhe",
+      "weightGrams": 12.4,
+      "price": {
+        "amount": 132000,
+        "currency": "ALL",
+        "display": "132,000 ALL"
+      },
+      "availability": "made_to_order",
+      "tags": [
+        "zinxhir",
+        "22 karat",
+        "unisex",
+        "ar"
+      ],
+      "synonyms": [
+        "zinxhire 22k",
+        "chain 22 karat"
+      ],
+      "styleNotes": [
+        "model klasik",
+        "mund te porositet me gjatesi te ndryshme"
+      ],
+      "images": [
+        {
+          "ref": "catalog-images/zinxhir-22k-unisex-001.jpg",
+          "altText": "Zinxhir 22 karat unisex me dizajn klasik"
+        }
+      ]
+    }
+  ]
+}
