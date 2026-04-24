@@ -87,7 +87,7 @@ export class OpenAiResponseService {
     return {
       text:
         catalogReply ??
-        "Pershendetje. Po e shoh menjehere kerkesen tuaj dhe po ju kthehem me opsionin me te afert.",
+        "Pershendetje, po e shoh menjehere kerkesen tuaj dhe po ju gjej opsionin me te afert 😊",
       model: null,
       usedFallback: true,
     };
@@ -134,10 +134,13 @@ function buildSystemPrompt(channel: RuntimeChannelType): string {
     "- Prefer tasteful cross-sell suggestions such as similar models, nearby karat options, or a close style match.",
     "",
     "Message-shape rules:",
-    "- Keep replies concise and chat-friendly. Usually 1 to 4 short sentences.",
+    "- Default to a single sentence.",
+    "- Use 2 to 3 short sentences only when needed to answer clearly or to add one short helpful follow-up.",
+    "- At least once every 3 sentences, include a natural offer of help, guidance, or another option.",
+    "- Keep the tone friendly and warm, and use 1 or 2 light emojis when they fit naturally.",
     "- Avoid long paragraphs, hard-sell language, and internal explanations.",
     "- Do not use markdown tables or heavy formatting.",
-    "- If listing options, keep the list short and easy to scan.",
+    "- Avoid lists unless the customer explicitly asks for multiple options.",
     "",
     "Output rules:",
     "- Return only the customer-facing reply text.",
@@ -158,7 +161,8 @@ function buildModelInput(input: GenerateReplyInput): string {
     "2. If a matching jewelry product exists, lead with the best match.",
     "3. Mention only confirmed product facts from the provided context.",
     "4. If the request is broad or unclear, ask one short clarifying question or offer 1 to 3 close alternatives.",
-    "5. Keep the reply natural, premium, and short enough for chat.",
+    "5. Keep the reply natural, premium, friendly, and usually limited to one sentence.",
+    "6. Within every 3 sentences, include one natural offer to help further, show more options, or narrow the choice.",
     "Recent conversation:",
     conversation,
     formatCatalogSearchForPrompt(input.catalogSearch),

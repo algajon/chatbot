@@ -257,26 +257,24 @@ export function buildCatalogFallbackReply(
   }
 
   if (search.exactMatches.length > 0) {
-    const lines = ["Po, kemi disa modele qe besoj se ju pelqejne:"];
-    for (const [index, match] of search.exactMatches.entries()) {
-      lines.push(`${index + 1}. ${formatProductSummary(match.product)}`);
+    const topMatch = search.exactMatches[0]?.product;
+    if (!topMatch) {
+      return undefined;
     }
-    lines.push("Nese doni, mund t'ju dergoj edhe modele te ngjashme.");
-    return lines.join("\n");
+
+    return `Po, kemi ${buildFriendlyProductMention(topMatch)} 😊 Nese doni, mund t'ju tregoj edhe modele te ngjashme.`;
   }
 
   if (search.suggestedMatches.length > 0) {
-    const lines = [
-      "Pikerisht ate model nuk e gjeta, por kam disa variante shume te aferta:",
-    ];
-    for (const [index, match] of search.suggestedMatches.entries()) {
-      lines.push(`${index + 1}. ${formatProductSummary(match.product)}`);
+    const topMatch = search.suggestedMatches[0]?.product;
+    if (!topMatch) {
+      return undefined;
     }
-    lines.push("Nese doni, mund ta ngushtoj kerkimin sipas karatit, modelit ose buxhetit.");
-    return lines.join("\n");
+
+    return `Pikerisht ate model nuk e gjeta, por kam ${buildFriendlyProductMention(topMatch)} si variant shume te afert 😊 Nese doni, mund ta ngushtoj kerkimin sipas karatit, modelit ose buxhetit.`;
   }
 
-  return "Per momentin nuk po me del nje model i sakte per kete pershkrim. Nese me tregoni kategorine, karatin ose buxhetin, mund t'ju sugjeroj dicka me te afert.";
+  return "Per momentin nuk po me del nje model i sakte per kete pershkrim 😊 Nese doni, me tregoni kategorine, karatin ose buxhetin dhe ju sugjeroj dicka me te afert.";
 }
 
 export function getTopCatalogProduct(
@@ -509,4 +507,14 @@ function formatProductSummary(product: JewelryProduct): string {
   ];
 
   return parts.filter((value): value is string => Boolean(value)).join(" | ");
+}
+
+function buildFriendlyProductMention(product: JewelryProduct): string {
+  const parts = [
+    product.title,
+    product.karat ? `${product.karat}K` : undefined,
+    product.price.display,
+  ];
+
+  return parts.filter((value): value is string => Boolean(value)).join(" me ");
 }
