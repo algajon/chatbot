@@ -77,6 +77,9 @@ export type CatalogSearchMatch = {
 };
 
 export type CatalogSearchResult = {
+  storeName: string;
+  storeCurrency: string;
+  storeNotes?: string;
   query: string;
   normalizedQuery: string;
   filters: CatalogFilters;
@@ -175,6 +178,9 @@ export function searchJewelryCatalog(params: {
     .sort((left, right) => right.score - left.score);
 
   return {
+    storeName: params.catalog.store.name,
+    storeCurrency: params.catalog.store.currency,
+    storeNotes: params.catalog.store.notes,
     query: params.query,
     normalizedQuery: analysis.normalizedQuery,
     filters: analysis.filters,
@@ -192,8 +198,14 @@ export function formatCatalogSearchForPrompt(
 
   const lines = [
     "Katalogu i argjendarise:",
+    `Dyqani: ${search.storeName}`,
+    `Monedha baze: ${search.storeCurrency}`,
     `Pyetja e klientit: ${search.query}`,
   ];
+
+  if (search.storeNotes) {
+    lines.push(`Shenime dyqani: ${search.storeNotes}`);
+  }
 
   if (search.filters.category) {
     lines.push(`Kategori e kerkuar: ${search.filters.category}`);
@@ -245,24 +257,26 @@ export function buildCatalogFallbackReply(
   }
 
   if (search.exactMatches.length > 0) {
-    const lines = ["Po, kemi disa modele qe perputhen me kerkesen tuaj:"];
+    const lines = ["Po, kemi disa modele qe besoj se ju pelqejne:"];
     for (const [index, match] of search.exactMatches.entries()) {
       lines.push(`${index + 1}. ${formatProductSummary(match.product)}`);
     }
-    lines.push("Nese deshironi, mund t'ju sugjeroj edhe modele te ngjashme.");
+    lines.push("Nese doni, mund t'ju dergoj edhe modele te ngjashme.");
     return lines.join("\n");
   }
 
   if (search.suggestedMatches.length > 0) {
-    const lines = ["Nuk gjeta pikerisht ate qe kerkuat, por kam disa opsione te aferta:"];
+    const lines = [
+      "Pikerisht ate model nuk e gjeta, por kam disa variante shume te aferta:",
+    ];
     for (const [index, match] of search.suggestedMatches.entries()) {
       lines.push(`${index + 1}. ${formatProductSummary(match.product)}`);
     }
-    lines.push("Nese doni, mund ta ngushtoj kerkimin sipas karatit, buxhetit ose modelit.");
+    lines.push("Nese doni, mund ta ngushtoj kerkimin sipas karatit, modelit ose buxhetit.");
     return lines.join("\n");
   }
 
-  return "Per momentin nuk gjeta produkt ne katalog per kete pershkrim. Nese me tregoni kategorine, karatin ose buxhetin, mund ta ngushtoj kerkimin.";
+  return "Per momentin nuk po me del nje model i sakte per kete pershkrim. Nese me tregoni kategorine, karatin ose buxhetin, mund t'ju sugjeroj dicka me te afert.";
 }
 
 export function getTopCatalogProduct(
