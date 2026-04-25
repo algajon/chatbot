@@ -50,7 +50,7 @@ export class OpenAiResponseService {
         model: this.env.OPENAI_MODEL,
         instructions: buildSystemPrompt(input.channel),
         input: buildModelInput(input),
-        max_output_tokens: 140,
+        max_output_tokens: 100,
         reasoning: {
           effort: this.env.OPENAI_REASONING_EFFORT,
         },
@@ -84,10 +84,12 @@ export class OpenAiResponseService {
   ): GenerateReplyResult {
     const catalogReply = buildCatalogFallbackReply(catalogSearch);
 
+    const fallbackText =
+      catalogReply ??
+      "Pershendetje, po e shoh menjehere kerkesen tuaj dhe po ju gjej opsionin me te afert 😊";
+
     return {
-      text:
-        catalogReply ??
-        "Pershendetje, po e shoh menjehere kerkesen tuaj dhe po ju gjej opsionin me te afert 😊",
+      text: tidyReplyText(fallbackText),
       model: null,
       usedFallback: true,
     };
@@ -129,14 +131,16 @@ function buildSystemPrompt(channel: RuntimeChannelType): string {
     "- When there is a strong match, recommend it confidently and mention only the most important confirmed details.",
     "- Mention price, weight, karat, and material only when those values are explicitly present in the context.",
     "- If the customer asks broadly, guide them by category, karat, audience, style, or budget.",
-    "- Ask at most one clarifying question per reply, and only when it helps narrow the choice.",
+    "- Ask at most one clarifying question per reply, and only when there is no confident answer without it.",
     "- When useful, suggest up to 3 similar items, not more.",
     "- Prefer tasteful cross-sell suggestions such as similar models, nearby karat options, or a close style match.",
+    "- Do not interrupt your own answer with unnecessary follow-up offers like 'Nese doni...' unless they genuinely help the customer move forward.",
+    "- Do not repeat, restart, soften, or self-correct mid-reply.",
     "",
     "Message-shape rules:",
     "- Default to a single sentence.",
-    "- Use 2 to 3 short sentences only when needed to answer clearly or to add one short helpful follow-up.",
-    "- At least once every 3 sentences, include a natural offer of help, guidance, or another option.",
+    "- Use 2 short sentences only when needed to answer clearly or ask one concise follow-up.",
+    "- Do not append a help offer, extra option, or clarifying question unless it materially improves the conversation.",
     "- Keep the tone friendly and warm, and use 1 or 2 light emojis when they fit naturally.",
     "- Avoid long paragraphs, hard-sell language, and internal explanations.",
     "- Do not use markdown tables or heavy formatting.",
@@ -160,9 +164,9 @@ function buildModelInput(input: GenerateReplyInput): string {
     "1. Answer the customer's main need directly.",
     "2. If a matching jewelry product exists, lead with the best match.",
     "3. Mention only confirmed product facts from the provided context.",
-    "4. If the request is broad or unclear, ask one short clarifying question or offer 1 to 3 close alternatives.",
+    "4. If the request is broad or unclear, either ask one short clarifying question or offer 1 to 3 close alternatives, not both.",
     "5. Keep the reply natural, premium, friendly, and usually limited to one sentence.",
-    "6. Within every 3 sentences, include one natural offer to help further, show more options, or narrow the choice.",
+    "6. Avoid endings like 'Nese doni...' unless the customer clearly needs another step or more options.",
     "Recent conversation:",
     conversation,
     formatCatalogSearchForPrompt(input.catalogSearch),
@@ -171,4 +175,11 @@ function buildModelInput(input: GenerateReplyInput): string {
   ]
     .filter((value): value is string => Boolean(value))
     .join("\n");
+}
+
+function tidyReplyText(text: string): string {
+  return text
+    .replace(/\s+(Nese doni,?|Nëse doni,?).*$/i, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
