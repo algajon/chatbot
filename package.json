@@ -15,6 +15,9 @@
     "dev:api": "turbo run dev --filter=@meta-chatbot/api",
     "dev:worker": "turbo run dev --filter=@meta-chatbot/worker",
     "start:render": "node ./scripts/render-start.js",
+    "scrape:dardani-catalog": "node ./scripts/scrape-dardani-catalog.js",
+    "import:dardani-catalog": "node ./scripts/import-dardani-catalog.js",
+    "sync:dardani-catalog": "npm run scrape:dardani-catalog && npm run import:dardani-catalog",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "db:enable-pgvector": "prisma db execute --file ./scripts/sql/enable-pgvector.sql",
@@ -26,9 +29,11 @@
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
+    "image-size": "^2.0.2",
     "prisma": "^7.8.0",
-    "turbo": "^2.5.8",
+    "tesseract.js": "^7.0.0",
     "tsx": "^4.20.6",
+    "turbo": "^2.5.8",
     "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   }

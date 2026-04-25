@@ -50,7 +50,7 @@ export class OpenAiResponseService {
         model: this.env.OPENAI_MODEL,
         instructions: buildSystemPrompt(input.channel),
         input: buildModelInput(input),
-        max_output_tokens: 220,
+        max_output_tokens: 140,
         reasoning: {
           effort: this.env.OPENAI_REASONING_EFFORT,
         },

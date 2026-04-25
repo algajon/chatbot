@@ -10,3 +10,4 @@ coverage/
 *.tsbuildinfo
 prisma/migrations/
 PRIVATE_ARGJENDARI_NOTES.md
+data/dardani-catalog-scrape/
