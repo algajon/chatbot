@@ -12,6 +12,25 @@ const catalog = jewelryCatalogSchema.parse({
   },
   products: [
     {
+      sku: "UNM-14K-LOW",
+      title: "Unaze per meshkuj 14 karat ekonomike",
+      description: "Model i thjeshte dhe ekonomik me ar te verdhe.",
+      category: "unaze",
+      targetAudience: "meshkuj",
+      karat: 14,
+      material: "ar i verdhe",
+      weightGrams: 5.1,
+      price: {
+        amount: 45000,
+        display: "45,000 ALL",
+      },
+      availability: "in_stock",
+      tags: ["unaze", "meshkuj", "ekonomike"],
+      synonyms: ["unaze te lira per meshkuj"],
+      styleNotes: ["klasike"],
+      images: [],
+    },
+    {
       sku: "UNM-22K-001",
       title: "Unaze klasike 22 karat per meshkuj",
       description: "Model klasik me ar te verdhe per meshkuj.",
@@ -21,12 +40,32 @@ const catalog = jewelryCatalogSchema.parse({
       material: "ar i verdhe",
       weightGrams: 7.2,
       price: {
+        amount: 85000,
         display: "85,000 ALL",
       },
       availability: "in_stock",
       tags: ["unaze", "22 karat", "meshkuj"],
       synonyms: ["unaze per burra 22k"],
       styleNotes: ["klasike"],
+      images: [],
+    },
+    {
+      sku: "UNM-22K-002",
+      title: "Unaze luksoze 22 karat per meshkuj",
+      description: "Model luksoz me punim te rende dhe pamje premium.",
+      category: "unaze",
+      targetAudience: "meshkuj",
+      karat: 22,
+      material: "ar i verdhe",
+      weightGrams: 9.8,
+      price: {
+        amount: 140000,
+        display: "140,000 ALL",
+      },
+      availability: "in_stock",
+      tags: ["unaze", "22 karat", "meshkuj", "luksoze"],
+      synonyms: ["unaze ma te shtrejta per meshkuj"],
+      styleNotes: ["premium"],
       images: [],
     },
     {
@@ -38,6 +77,7 @@ const catalog = jewelryCatalogSchema.parse({
       material: "argjend",
       weightGrams: 4.1,
       price: {
+        amount: 12500,
         display: "12,500 ALL",
       },
       availability: "in_stock",
@@ -82,6 +122,39 @@ describe("@meta-chatbot/catalog", () => {
 
     expect(result.filters.category).toBe("unaze");
     expect(result.filters.targetAudience).toBe("meshkuj");
-    expect(result.suggestedMatches[0]?.product.sku).toBe("UNM-22K-001");
+    expect(result.suggestedMatches[0]?.product.category).toBe("unaze");
+  });
+
+  it("ranks more expensive mens rings first for a loosely typed Albanian query", () => {
+    const result = searchJewelryCatalog({
+      query: "unaz ma t shtrejta per meshkuj",
+      catalog,
+    });
+
+    expect(result.pricePreference).toBe("higher");
+    expect(result.filters.category).toBe("unaze");
+    expect(result.filters.targetAudience).toBe("meshkuj");
+    expect(result.suggestedMatches[0]?.product.sku).toBe("UNM-22K-002");
+  });
+
+  it("ranks cheaper rings first when the customer asks for lower prices", () => {
+    const result = searchJewelryCatalog({
+      query: "unaza me te lira",
+      catalog,
+    });
+
+    expect(result.pricePreference).toBe("lower");
+    expect(result.filters.category).toBe("unaze");
+    expect(result.suggestedMatches[0]?.product.sku).toBe("UNM-14K-LOW");
+  });
+
+  it("surfaces pricier jewelry for a broad 'more expensive' request", () => {
+    const result = searchJewelryCatalog({
+      query: "dua dicka me te shtrenjte",
+      catalog,
+    });
+
+    expect(result.pricePreference).toBe("higher");
+    expect(result.suggestedMatches[0]?.product.sku).toBe("UNM-22K-002");
   });
 });
