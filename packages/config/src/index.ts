@@ -24,10 +24,10 @@ const envSchema = z.object({
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
     .default("info"),
-  OPENAI_MODEL: z.string().min(1).default("gpt-5.4-mini"),
+  OPENAI_MODEL: z.string().min(1).default("gpt-5.2"),
   OPENAI_REASONING_EFFORT: z
     .enum(["none", "minimal", "low", "medium", "high", "xhigh"])
-    .default("low"),
+    .default("medium"),
   META_GRAPH_VERSION: z.string().min(1).default("v23.0"),
   OPENAI_TIMEOUT_MS: z.coerce.number().int().positive().default(20_000),
   EXTERNAL_HTTP_TIMEOUT_MS: z.coerce.number().int().positive().default(10_000),
